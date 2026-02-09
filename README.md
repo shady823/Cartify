@@ -1,4 +1,4 @@
-🛒 E-Commerce Frontend (React + TypeScript + AI-Ready Architecture)
+🛒 Cartify — E-Commerce Frontend (React + TypeScript + AI-Ready Architecture)
 
 A production-grade, modern e-commerce frontend built with React 19, TypeScript, and enterprise tooling.
 Designed with a premium Apple / Stripe / Shopify-inspired UI, smooth animations, dark mode, and scalable architecture.

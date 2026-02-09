@@ -15,7 +15,6 @@ import { useAuthStore, useThemeStore } from "@/store";
 import { useCartCount } from "@/hooks/useCartCount";
 import { useWishlistCount } from "@/hooks/useWishlistCount";
 import { CartDrawer } from "@/features/cart/CartDrawer";
-import { cn } from "@/utils/cn";
 
 export function Navbar({
   onToggleSidebar,

@@ -23,7 +23,7 @@ export function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "visa">("cash");
   const [errors, setErrors] = useState<Partial<ShippingAddress>>({});
 
-  const { data: cartData, isLoading: cartLoading } = useCartQuery();
+  const { data: cartData } = useCartQuery();
   const cart = cartData?.data;
   const items = cart?.products ?? [];
   const total = items.reduce((sum, item) => {

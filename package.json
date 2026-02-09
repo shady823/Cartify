@@ -1,16 +1,24 @@
 {
-  "name": "e-commerce",
+  "name": "cartify",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run"
   },
+  "homepage": "https://shady823.github.io/Cartify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shady823/Cartify.git"
+  },
+  "author": "shady823",
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
     "axios": "^1.13.4",
