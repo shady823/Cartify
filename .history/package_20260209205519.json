@@ -2,10 +2,10 @@
   "name": "cartify",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://shady823.github.io/Cartify",
+  "homepage": "https://gitname.github.io/react-gh-pages",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "vite build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
@@ -13,6 +13,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run"
+  },
+  "homepage": "https://shady823.github.io/Cartify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shady823/Cartify.git"
   },
   "author": "shady823",
   "dependencies": {

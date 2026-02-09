@@ -5,7 +5,7 @@
   "homepage": "https://shady823.github.io/Cartify",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "vite build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
