@@ -129,12 +129,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                               key={cat._id}
                               to={`products?category=${cat._id}`}
                               className={cn(
-                                "block px-3 py-2 rounded-xl text-sm transition-colors",
+                                "group flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentCategory === cat._id
                                   ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
                                   : "hover:bg-[var(--color-card-hover)]",
                               )}
                             >
+                              <img
+                                src={cat.image}
+                                alt={cat.name}
+                                className="w-8 h-8 object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                              />
                               {cat.name}
                             </Link>
                           ))}
@@ -193,12 +198,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                               key={brand._id}
                               to={`products?brand=${brand._id}`}
                               className={cn(
-                                "block px-3 py-2 rounded-xl text-sm transition-colors",
+                                "group flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentBrand === brand._id
                                   ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
                                   : "hover:bg-[var(--color-card-hover)]",
                               )}
                             >
+                              <img
+                                src={brand.image}
+                                alt={brand.name}
+                                className="w-8 h-8 object-contain rounded transition-transform duration-300 group-hover:scale-105"
+                              />
                               {brand.name}
                             </Link>
                           ))}
