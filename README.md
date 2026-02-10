@@ -73,14 +73,6 @@ How I Integrated AI
 
 During development, I used AI agents (Cursor / GPT-based coding assistants) as a pair programmer to:
 
-✅ Code Generation
-
-Scaffold pages, hooks, and components
-
-Generate TypeScript types from API responses
-
-Create reusable UI patterns
-
 ✅ Refactoring
 
 Convert JS → TypeScript safely
@@ -259,20 +251,6 @@ Wishlist
 
 Orders
 
-▶️ Setup
-npm install
-npm run dev
-
-Open:
-
-http://localhost:5173
-
-📜 Scripts
-Command Description
-npm run dev start dev
-npm run build production build
-npm run preview preview build
-npm run lint eslint
 
 📈 What This Project Demonstrates
 
@@ -304,3 +282,4 @@ PWA support
 Shady Zaki
 Frontend Engineer
 React • TypeScript • AI-Augmented Development
+
