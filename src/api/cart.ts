@@ -3,7 +3,8 @@ import type { AxiosRequestConfig } from "axios";
 import type { CartResponse } from "@/types";
 
 export const cartApi = {
-  get: (config?: AxiosRequestConfig) => api.get<CartResponse>("/api/v1/cart", config),
+  get: (config?: AxiosRequestConfig) =>
+    api.get<CartResponse>("/api/v1/cart", config),
 
   add: (productId: string, count: number = 1) =>
     api.post<CartResponse>("/api/v1/cart", { productId, count }),
