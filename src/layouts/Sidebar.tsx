@@ -1,7 +1,7 @@
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronDown, FiX } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { categoriesApi, brandsApi } from "@/api";
 import { cn } from "@/utils/cn";
@@ -15,11 +15,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const [searchParams] = useSearchParams();
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [brandsOpen, setBrandsOpen] = useState(true);
-  const location = useLocation();
-  const isProductsRoute = location.pathname === "/products";
 
-  // Enable filters immediately on /products (no delay)
-  const filtersEnabled = isProductsRoute;
+  // Enable filters on all pages to ensure data is available
+  const filtersEnabled = true;
 
   const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
