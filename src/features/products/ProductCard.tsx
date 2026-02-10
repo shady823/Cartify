@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
@@ -14,13 +15,14 @@ interface ProductCardProps {
   imageLoading?: "eager" | "lazy";
 }
 
-export function ProductCard({
+function ProductCardComponent({
   product,
   isInWishlist = false,
   imageLoading = "lazy",
 }: ProductCardProps) {
   const productId = product.id ?? (product as { _id?: string })._id ?? "";
   const queryClient = useQueryClient();
+
   const addToCart = useMutation({
     mutationFn: () => cartApi.add(productId, 1),
     onSuccess: () => {
@@ -29,6 +31,7 @@ export function ProductCard({
     },
     onError: () => toast.error("Failed to add to cart"),
   });
+
   const toggleWishlist = useMutation({
     mutationFn: () =>
       isInWishlist ? wishlistApi.remove(productId) : wishlistApi.add(productId),
@@ -141,3 +144,6 @@ export function ProductCard({
     </motion.article>
   );
 }
+
+
+export const ProductCard = React.memo(ProductCardComponent);
