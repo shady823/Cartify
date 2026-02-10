@@ -1,7 +1,7 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronDown, FiX } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { categoriesApi, brandsApi } from "@/api";
 import { cn } from "@/utils/cn";
@@ -16,22 +16,21 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [brandsOpen, setBrandsOpen] = useState(true);
   const location = useLocation();
-  const isProductsRoute = location.pathname === "/products";
+  const isProductsRoute = location.hash.includes("/products");
 
-  // Enable filters immediately on /products (no delay)
   const filtersEnabled = isProductsRoute;
 
   const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: ({ signal }) =>
-      categoriesApi.getAll({ signal }).then((r) => r.data),
+    queryFn: () => categoriesApi.getAll().then((r) => r.data),
     enabled: filtersEnabled,
-    staleTime: 1000 * 60 * 60,  // 1 hour cache
-    refetchOnWindowFocus: false,  // Avoid unnecessary refetches
+    staleTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
   });
+
   const { data: brandsData, isLoading: brandsLoading } = useQuery({
     queryKey: ["brands"],
-    queryFn: ({ signal }) => brandsApi.getAll({ signal }).then((r) => r.data),
+    queryFn: () => brandsApi.getAll().then((r) => r.data),
     enabled: filtersEnabled,
     staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
@@ -41,6 +40,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const brands = brandsData?.data ?? [];
   const currentCategory = searchParams.get("category");
   const currentBrand = searchParams.get("brand");
+
+  const buildHashLink = (path: string, params?: string) =>
+    `#${path}${params ? "?" + params : ""}`;
 
   return (
     <>
@@ -60,7 +62,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       <aside
         className={cn(
           "fixed top-0 left-0 z-50 h-full w-72 border-r border-[var(--color-border)] bg-[var(--color-background)] lg:static lg:z-auto lg:block lg:h-auto lg:w-64 lg:border-r lg:shrink-0",
-          !open && "hidden lg:block",
+          !open && "hidden lg:block"
         )}
       >
         <motion.div
@@ -84,7 +86,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
 
           <nav className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/** Categories Section */}
+            {/* Categories */}
             <div className="rounded-2xl border border-[var(--color-border)] overflow-hidden">
               <button
                 type="button"
@@ -95,7 +97,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 <FiChevronDown
                   className={cn(
                     "h-4 w-4 transition-transform",
-                    categoriesOpen && "rotate-180",
+                    categoriesOpen && "rotate-180"
                   )}
                 />
               </button>
@@ -110,17 +112,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       {categoriesLoading ? (
-                        // Show loading state for categories
-                        <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          Loading...
+                        </div>
                       ) : (
                         <>
                           <Link
-                            to="/products"
+                            to={buildHashLink("/products")}
                             className={cn(
                               "block px-3 py-2 rounded-xl text-sm transition-colors",
                               !currentCategory
                                 ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                : "hover:bg-[var(--color-card-hover)]",
+                                : "hover:bg-[var(--color-card-hover)]"
                             )}
                           >
                             All
@@ -128,12 +131,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                           {categories.map((cat) => (
                             <Link
                               key={cat._id}
-                              to={`/products?category=${cat._id}`}
+                              to={buildHashLink("/products", `category=${cat._id}`)}
                               className={cn(
                                 "block px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentCategory === cat._id
                                   ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                  : "hover:bg-[var(--color-card-hover)]",
+                                  : "hover:bg-[var(--color-card-hover)]"
                               )}
                             >
                               {cat.name}
@@ -147,7 +150,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </AnimatePresence>
             </div>
 
-            {/** Brands Section */}
+            {/* Brands */}
             <div className="rounded-2xl border border-[var(--color-border)] overflow-hidden">
               <button
                 type="button"
@@ -158,7 +161,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 <FiChevronDown
                   className={cn(
                     "h-4 w-4 transition-transform",
-                    brandsOpen && "rotate-180",
+                    brandsOpen && "rotate-180"
                   )}
                 />
               </button>
@@ -173,17 +176,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       {brandsLoading ? (
-                        // Show loading state for brands
-                        <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          Loading...
+                        </div>
                       ) : (
                         <>
                           <Link
-                            to="/products"
+                            to={buildHashLink("/products")}
                             className={cn(
                               "block px-3 py-2 rounded-xl text-sm transition-colors",
                               !currentBrand
                                 ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                : "hover:bg-[var(--color-card-hover)]",
+                                : "hover:bg-[var(--color-card-hover)]"
                             )}
                           >
                             All
@@ -191,12 +195,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                           {brands.map((brand) => (
                             <Link
                               key={brand._id}
-                              to={`/products?brand=${brand._id}`}
+                              to={buildHashLink("/products", `brand=${brand._id}`)}
                               className={cn(
                                 "block px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentBrand === brand._id
                                   ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                  : "hover:bg-[var(--color-card-hover)]",
+                                  : "hover:bg-[var(--color-card-hover)]"
                               )}
                             >
                               {brand.name}
