@@ -2,7 +2,7 @@
   "name": "cartify",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://shady823.github.io/Cartify",
+  "homepage": "https://shady823.github.io/Cartify/",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
