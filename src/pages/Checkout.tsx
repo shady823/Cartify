@@ -26,10 +26,12 @@ export function Checkout() {
   const { data: cartData } = useCartQuery();
   const cart = cartData?.data;
   const items = cart?.products ?? [];
-  const total = items.reduce((sum, item) => {
+  const subtotal = items.reduce((sum, item) => {
     const unitPrice = item.product?.priceAfterDiscount ?? item.price;
     return sum + unitPrice * item.count;
   }, 0);
+  const shippingFee = 50;
+  const total = subtotal + shippingFee;
   const isEmpty = items.length === 0;
 
   const validateField = (field: keyof ShippingAddress, value: string) => {
@@ -254,23 +256,49 @@ export function Checkout() {
 
         {/* Summary card */}
         <div className="rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[var(--shadow-soft)] space-y-4">
-          <div className="space-y-2 text-sm">
+          <div className="space-y-3 text-sm">
             {items.map((item) => {
               const unitPrice = item.product?.priceAfterDiscount ?? item.price;
               return (
                 <div
                   key={item._id}
-                  className="flex justify-between text-[var(--color-muted-foreground)]"
+                  className="flex items-center justify-between text-[var(--color-muted-foreground)]"
                 >
-                  <span>
-                    {item.product?.title} × {item.count}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={
+                        item.product?.imageCover || item.product?.images?.[0]
+                      }
+                      alt={item.product?.title}
+                      className="h-10 w-10 rounded-lg object-cover"
+                    />
+                    <span>
+                      {item.product?.title} × {item.count}
+                    </span>
+                  </div>
                   <span className="text-[var(--color-foreground)] font-medium">
                     EGP {unitPrice * item.count}
                   </span>
                 </div>
               );
             })}
+          </div>
+
+          <div className="h-px bg-[var(--color-border)]" />
+
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-[var(--color-muted-foreground)]">
+              <span>Subtotal</span>
+              <span className="text-[var(--color-foreground)] font-medium">
+                EGP {subtotal}
+              </span>
+            </div>
+            <div className="flex justify-between text-[var(--color-muted-foreground)]">
+              <span>Shipping fee</span>
+              <span className="text-[var(--color-foreground)] font-medium">
+                EGP {shippingFee}
+              </span>
+            </div>
           </div>
 
           <div className="h-px bg-[var(--color-border)]" />
