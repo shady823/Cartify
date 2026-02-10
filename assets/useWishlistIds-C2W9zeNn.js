@@ -1,0 +1,1 @@
+import{d as a,v as p}from"./index-DqMWGEfX.js";const d={getAll:s=>a.get("/api/v1/products",{params:s}),getById:s=>a.get(`/api/v1/products/${s}`)};function e(s){const{data:i}=p(s),t=i?.data??[];return Array.isArray(t)?t.map(r=>r.id):[]}export{d as p,e as u};
