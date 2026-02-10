@@ -1,9 +1,6 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiChevronDown, FiX } from "react-icons/fi";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { categoriesApi, brandsApi } from "@/api";
+import { FiX } from "react-icons/fi";
 import { cn } from "@/utils/cn";
 
 interface SidebarProps {
@@ -12,34 +9,6 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const [searchParams] = useSearchParams();
-  const [categoriesOpen, setCategoriesOpen] = useState(true);
-  const [brandsOpen, setBrandsOpen] = useState(true);
-
-  const filtersEnabled = true;
-
-  const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: ({ signal }) =>
-      categoriesApi.getAll({ signal }).then((r) => r.data),
-    enabled: filtersEnabled,
-    staleTime: 1000 * 60 * 60,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: brandsData, isLoading: brandsLoading } = useQuery({
-    queryKey: ["brands"],
-    queryFn: ({ signal }) => brandsApi.getAll({ signal }).then((r) => r.data),
-    enabled: filtersEnabled,
-    staleTime: 1000 * 60 * 60,
-    refetchOnWindowFocus: false,
-  });
-
-  const categories = categoriesData?.data ?? [];
-  const brands = brandsData?.data ?? [];
-  const currentCategory = searchParams.get("category");
-  const currentBrand = searchParams.get("brand");
-
   return (
     <>
       <AnimatePresence>
@@ -69,7 +38,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         >
           <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] lg:border-0">
             <span className="font-semibold text-lg text-[var(--color-foreground)]">
-              Filters
+              Navigation
             </span>
             <button
               type="button"
@@ -82,143 +51,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
 
           <nav className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/** Categories Section */}
-            <div className="rounded-2xl border border-[var(--color-border)] overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setCategoriesOpen((o) => !o)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left font-medium hover:bg-[var(--color-card-hover)] transition-colors"
-              >
-                Categories
-                <FiChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform",
-                    categoriesOpen && "rotate-180",
-                  )}
-                />
-              </button>
-              <AnimatePresence>
-                {categoriesOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-2 pb-3 space-y-0.5">
-                      {categoriesLoading ? (
-                        <div className="px-3 py-2 text-sm text-gray-500">
-                          Loading...
-                        </div>
-                      ) : (
-                        <>
-                          <Link
-                            to="products"
-                            className={cn(
-                              "block px-3 py-2 rounded-xl text-sm transition-colors",
-                              !currentCategory
-                                ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                : "hover:bg-[var(--color-card-hover)]",
-                            )}
-                          >
-                            All
-                          </Link>
-                          {categories.map((cat) => (
-                            <Link
-                              key={cat._id}
-                              to={`products?category=${cat._id}`}
-                              className={cn(
-                                "group flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors",
-                                currentCategory === cat._id
-                                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                  : "hover:bg-[var(--color-card-hover)]",
-                              )}
-                            >
-                              <img
-                                src={cat.image}
-                                alt={cat.name}
-                                className="w-8 h-8 object-cover rounded transition-transform duration-300 group-hover:scale-105"
-                              />
-                              {cat.name}
-                            </Link>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/** Brands Section */}
-            <div className="rounded-2xl border border-[var(--color-border)] overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setBrandsOpen((o) => !o)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left font-medium hover:bg-[var(--color-card-hover)] transition-colors"
-              >
-                Brands
-                <FiChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform",
-                    brandsOpen && "rotate-180",
-                  )}
-                />
-              </button>
-              <AnimatePresence>
-                {brandsOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-2 pb-3 space-y-0.5">
-                      {brandsLoading ? (
-                        <div className="px-3 py-2 text-sm text-gray-500">
-                          Loading...
-                        </div>
-                      ) : (
-                        <>
-                          <Link
-                            to="products"
-                            className={cn(
-                              "block px-3 py-2 rounded-xl text-sm transition-colors",
-                              !currentBrand
-                                ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                : "hover:bg-[var(--color-card-hover)]",
-                            )}
-                          >
-                            All
-                          </Link>
-                          {brands.map((brand) => (
-                            <Link
-                              key={brand._id}
-                              to={`products?brand=${brand._id}`}
-                              className={cn(
-                                "group flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors",
-                                currentBrand === brand._id
-                                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                                  : "hover:bg-[var(--color-card-hover)]",
-                              )}
-                            >
-                              <img
-                                src={brand.image}
-                                alt={brand.name}
-                                className="w-8 h-8 object-contain rounded transition-transform duration-300 group-hover:scale-105"
-                              />
-                              {brand.name}
-                            </Link>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            <Link
+              to="/categories"
+              className="block px-4 py-3 rounded-xl text-left font-medium hover:bg-[var(--color-card-hover)] transition-colors"
+            >
+              Categories
+            </Link>
+            <Link
+              to="/brands"
+              className="block px-4 py-3 rounded-xl text-left font-medium hover:bg-[var(--color-card-hover)] transition-colors"
+            >
+              Brands
+            </Link>
           </nav>
         </motion.div>
       </aside>
