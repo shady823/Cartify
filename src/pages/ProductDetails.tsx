@@ -25,7 +25,7 @@ export function ProductDetails() {
   });
 
   const addToCart = useMutation({
-    mutationFn: () => cartApi.add(id!, quantity),
+    mutationFn: (qty: number) => cartApi.add(id!, qty),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       toast.success("Added to cart");
@@ -172,7 +172,7 @@ export function ProductDetails() {
               variant="primary"
               size="lg"
               loading={addToCart.isPending}
-              onClick={() => addToCart.mutate()}
+              onClick={() => addToCart.mutate(quantity)}
               className="inline-flex items-center gap-2"
             >
               <FiShoppingCart className="h-5 w-5" />
