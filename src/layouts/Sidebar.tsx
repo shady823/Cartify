@@ -26,14 +26,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     queryFn: ({ signal }) =>
       categoriesApi.getAll({ signal }).then((r) => r.data),
     enabled: filtersEnabled,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   });
   const { data: brandsData, isLoading: brandsLoading } = useQuery({
     queryKey: ["brands"],
     queryFn: ({ signal }) => brandsApi.getAll({ signal }).then((r) => r.data),
     enabled: filtersEnabled,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   });
 
