@@ -12,34 +12,29 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const [searchParams] = useSearchParams(); // Keep for reading current filters (e.g., for highlighting)
+  const [searchParams] = useSearchParams();
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [brandsOpen, setBrandsOpen] = useState(true);
   const location = useLocation();
   const isProductsRoute = location.pathname === "/products";
-  const [filtersEnabled, setFiltersEnabled] = useState(false);
 
-  useEffect(() => {
-    if (!isProductsRoute) {
-      setFiltersEnabled(false);
-      return;
-    }
-    const t = window.setTimeout(() => setFiltersEnabled(true), 800);
-    return () => window.clearTimeout(t);
-  }, [isProductsRoute]);
+  // Enable filters immediately on /products (no delay)
+  const filtersEnabled = isProductsRoute;
 
-  const { data: categoriesData } = useQuery({
+  const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: ({ signal }) =>
       categoriesApi.getAll({ signal }).then((r) => r.data),
     enabled: filtersEnabled,
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 60,  // 1 hour cache
+    refetchOnWindowFocus: false,  // Avoid unnecessary refetches
   });
-  const { data: brandsData } = useQuery({
+  const { data: brandsData, isLoading: brandsLoading } = useQuery({
     queryKey: ["brands"],
     queryFn: ({ signal }) => brandsApi.getAll({ signal }).then((r) => r.data),
     enabled: filtersEnabled,
     staleTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
   });
 
   const categories = categoriesData?.data ?? [];
@@ -114,31 +109,38 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                     className="overflow-hidden"
                   >
                     <div className="px-2 pb-3 space-y-0.5">
-                      <Link
-                        to="/products" // "All" - no query params
-                        className={cn(
-                          "block px-3 py-2 rounded-xl text-sm transition-colors",
-                          !currentCategory
-                            ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                            : "hover:bg-[var(--color-card-hover)]",
-                        )}
-                      >
-                        All
-                      </Link>
-                      {categories.map((cat) => (
-                        <Link
-                          key={cat._id}
-                          to={`/products?category=${cat._id}`} // Direct navigation with query
-                          className={cn(
-                            "block px-3 py-2 rounded-xl text-sm transition-colors",
-                            currentCategory === cat._id
-                              ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                              : "hover:bg-[var(--color-card-hover)]",
-                          )}
-                        >
-                          {cat.name}
-                        </Link>
-                      ))}
+                      {categoriesLoading ? (
+                        // Show loading state for categories
+                        <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+                      ) : (
+                        <>
+                          <Link
+                            to="/products"
+                            className={cn(
+                              "block px-3 py-2 rounded-xl text-sm transition-colors",
+                              !currentCategory
+                                ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                                : "hover:bg-[var(--color-card-hover)]",
+                            )}
+                          >
+                            All
+                          </Link>
+                          {categories.map((cat) => (
+                            <Link
+                              key={cat._id}
+                              to={`/products?category=${cat._id}`}
+                              className={cn(
+                                "block px-3 py-2 rounded-xl text-sm transition-colors",
+                                currentCategory === cat._id
+                                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                                  : "hover:bg-[var(--color-card-hover)]",
+                              )}
+                            >
+                              {cat.name}
+                            </Link>
+                          ))}
+                        </>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -170,31 +172,38 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                     className="overflow-hidden"
                   >
                     <div className="px-2 pb-3 space-y-0.5">
-                      <Link
-                        to="/products" // "All" - no query params
-                        className={cn(
-                          "block px-3 py-2 rounded-xl text-sm transition-colors",
-                          !currentBrand
-                            ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                            : "hover:bg-[var(--color-card-hover)]",
-                        )}
-                      >
-                        All
-                      </Link>
-                      {brands.map((brand) => (
-                        <Link
-                          key={brand._id}
-                          to={`/products?brand=${brand._id}`} // Direct navigation with query
-                          className={cn(
-                            "block px-3 py-2 rounded-xl text-sm transition-colors",
-                            currentBrand === brand._id
-                              ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                              : "hover:bg-[var(--color-card-hover)]",
-                          )}
-                        >
-                          {brand.name}
-                        </Link>
-                      ))}
+                      {brandsLoading ? (
+                        // Show loading state for brands
+                        <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+                      ) : (
+                        <>
+                          <Link
+                            to="/products"
+                            className={cn(
+                              "block px-3 py-2 rounded-xl text-sm transition-colors",
+                              !currentBrand
+                                ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                                : "hover:bg-[var(--color-card-hover)]",
+                            )}
+                          >
+                            All
+                          </Link>
+                          {brands.map((brand) => (
+                            <Link
+                              key={brand._id}
+                              to={`/products?brand=${brand._id}`}
+                              className={cn(
+                                "block px-3 py-2 rounded-xl text-sm transition-colors",
+                                currentBrand === brand._id
+                                  ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
+                                  : "hover:bg-[var(--color-card-hover)]",
+                              )}
+                            >
+                              {brand.name}
+                            </Link>
+                          ))}
+                        </>
+                      )}
                     </div>
                   </motion.div>
                 )}
