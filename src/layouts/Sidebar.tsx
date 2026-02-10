@@ -16,7 +16,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [brandsOpen, setBrandsOpen] = useState(true);
 
-  // Enable filters on all pages to ensure data is available
   const filtersEnabled = true;
 
   const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
@@ -27,6 +26,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   });
+
   const { data: brandsData, isLoading: brandsLoading } = useQuery({
     queryKey: ["brands"],
     queryFn: ({ signal }) => brandsApi.getAll({ signal }).then((r) => r.data),
@@ -108,14 +108,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       {categoriesLoading ? (
-                        // Show loading state for categories
                         <div className="px-3 py-2 text-sm text-gray-500">
                           Loading...
                         </div>
                       ) : (
                         <>
                           <Link
-                            to="/products"
+                            to="products"
                             className={cn(
                               "block px-3 py-2 rounded-xl text-sm transition-colors",
                               !currentCategory
@@ -128,7 +127,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                           {categories.map((cat) => (
                             <Link
                               key={cat._id}
-                              to={`/products?category=${cat._id}`}
+                              to={`products?category=${cat._id}`}
                               className={cn(
                                 "block px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentCategory === cat._id
@@ -173,14 +172,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       {brandsLoading ? (
-                        // Show loading state for brands
                         <div className="px-3 py-2 text-sm text-gray-500">
                           Loading...
                         </div>
                       ) : (
                         <>
                           <Link
-                            to="/products"
+                            to="products"
                             className={cn(
                               "block px-3 py-2 rounded-xl text-sm transition-colors",
                               !currentBrand
@@ -193,7 +191,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                           {brands.map((brand) => (
                             <Link
                               key={brand._id}
-                              to={`/products?brand=${brand._id}`}
+                              to={`products?brand=${brand._id}`}
                               className={cn(
                                 "block px-3 py-2 rounded-xl text-sm transition-colors",
                                 currentBrand === brand._id
