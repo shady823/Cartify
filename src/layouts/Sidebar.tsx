@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams(); // Keep for reading current filters (e.g., for highlighting)
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [brandsOpen, setBrandsOpen] = useState(true);
   const location = useLocation();
@@ -46,13 +46,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const brands = brandsData?.data ?? [];
   const currentCategory = searchParams.get("category");
   const currentBrand = searchParams.get("brand");
-
-  const setFilter = (key: string, value: string | null) => {
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set(key, value);
-    else next.delete(key);
-    setSearchParams(next);
-  };
 
   return (
     <>
@@ -122,8 +115,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       <Link
-                        to="/products"
-                        onClick={() => setFilter("category", "")}
+                        to="/products" // "All" - no query params
                         className={cn(
                           "block px-3 py-2 rounded-xl text-sm transition-colors",
                           !currentCategory
@@ -136,8 +128,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                       {categories.map((cat) => (
                         <Link
                           key={cat._id}
-                          to="/products"
-                          onClick={() => setFilter("category", cat._id)}
+                          to={`/products?category=${cat._id}`} // Direct navigation with query
                           className={cn(
                             "block px-3 py-2 rounded-xl text-sm transition-colors",
                             currentCategory === cat._id
@@ -180,8 +171,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   >
                     <div className="px-2 pb-3 space-y-0.5">
                       <Link
-                        to="/products"
-                        onClick={() => setFilter("brand", "")}
+                        to="/products" // "All" - no query params
                         className={cn(
                           "block px-3 py-2 rounded-xl text-sm transition-colors",
                           !currentBrand
@@ -194,8 +184,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                       {brands.map((brand) => (
                         <Link
                           key={brand._id}
-                          to="/products"
-                          onClick={() => setFilter("brand", brand._id)}
+                          to={`/products?brand=${brand._id}`} // Direct navigation with query
                           className={cn(
                             "block px-3 py-2 rounded-xl text-sm transition-colors",
                             currentBrand === brand._id
