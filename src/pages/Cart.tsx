@@ -20,9 +20,9 @@ export function Cart() {
       const prev = queryClient.getQueryData<CartResponse | null>(["cart"]);
       if (prev?.data?.products) {
         const products = prev.data.products.map((p) => {
-          const pId =
-            p.product?.id ?? (p.product as { _id?: string })?._id ?? "";
-          if (pId === productId) {
+          const pid =
+            p.product?.id ?? (p.product as { _id?: string } | null)?._id ?? "";
+          if (pid === productId) {
             return { ...p, count };
           }
           return p;
@@ -205,7 +205,10 @@ export function Cart() {
                   <button
                     type="button"
                     onClick={() =>
-                      updateCount.mutate({ productId, count: item.count + 1 })
+                      updateCount.mutate({
+                        productId,
+                        count: item.count + 1,
+                      })
                     }
                     disabled={updateCount.isPending || !productId}
                     className="h-10 w-10 flex items-center justify-center hover:bg-hover transition-colors"
