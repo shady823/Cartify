@@ -45,12 +45,21 @@ export function ProductDetails() {
           (item) => getProductIdFromCartItem(item) === id,
         );
         if (existingItem) {
-          return cartApi.updateCount(id!, existingItem.count + qty);
+          const existingProductId = getProductIdFromCartItem(existingItem) || id!;
+          return cartApi.updateCount(existingProductId, existingItem.count + qty);
         }
       }
 
       const addResponse = await cartApi.add(id!, qty);
-      if (qty > 1) return cartApi.updateCount(id!, qty);
+      const serverItem = addResponse.data?.data?.products?.find(
+        (item) => getProductIdFromCartItem(item) === id,
+      );
+      const serverCount = serverItem?.count;
+
+      if (qty > 1 && (typeof serverCount !== "number" || serverCount < qty)) {
+        const addedProductId = serverItem ? getProductIdFromCartItem(serverItem) : "";
+        return cartApi.updateCount(addedProductId || id!, qty);
+      }
       return addResponse;
     },
     onSuccess: () => {
@@ -229,3 +238,4 @@ export function ProductDetails() {
     </motion.div>
   );
 }
+
