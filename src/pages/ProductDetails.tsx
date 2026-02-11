@@ -9,6 +9,7 @@ import { Button } from "@/components/ui";
 import { useWishlistIds } from "@/hooks/useWishlistIds";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/utils/cn";
+import type { CartResponse } from "@/types";
 
 export function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,33 @@ export function ProductDetails() {
   });
 
   const addToCart = useMutation({
-    mutationFn: (qty: number) => cartApi.add(id!, qty),
+    mutationFn: async (qty: number) => {
+      const getProductIdFromCartItem = (item: unknown): string => {
+        const product = (item as { product?: unknown } | null | undefined)
+          ?.product as { id?: unknown; _id?: unknown } | null | undefined;
+        const productId = product?.id;
+        if (typeof productId === "string" && productId) return productId;
+        const _id = product?._id;
+        if (typeof _id === "string" && _id) return _id;
+        return "";
+      };
+
+      const cartData = queryClient.getQueryData([
+        "cart",
+      ]) as CartResponse | null;
+      if (cartData?.data?.products) {
+        const existingItem = cartData.data.products.find(
+          (item) => getProductIdFromCartItem(item) === id,
+        );
+        if (existingItem) {
+          return cartApi.updateCount(id!, existingItem.count + qty);
+        }
+      }
+
+      const addResponse = await cartApi.add(id!, qty);
+      if (qty > 1) return cartApi.updateCount(id!, qty);
+      return addResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       toast.success("Added to cart");
@@ -83,9 +110,9 @@ export function ProductDetails() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+      className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8"
     >
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-3xl border border-[var(--color-border)] dark:border-[var(--color-border)] bg-[var(--color-card)] dark:bg-[var(--color-card)]">
             <img
@@ -96,14 +123,14 @@ export function ProductDetails() {
             />
           </div>
           {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 touch-pan-x snap-x snap-mandatory sm:mx-0 sm:px-0">
               {images.map((img, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setImageIndex(i)}
                   className={cn(
-                    "h-20 w-20 shrink-0 rounded-xl border-2 overflow-hidden transition-all",
+                    "h-20 w-20 shrink-0 snap-start rounded-xl border-2 overflow-hidden transition-all",
                     imageIndex === i
                       ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/30"
                       : "border-[var(--color-border)] dark:border-[var(--color-border)] hover:border-[var(--color-muted)] dark:hover:border-[var(--color-muted-foreground)]",
@@ -123,19 +150,19 @@ export function ProductDetails() {
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-foreground)]">
+          <h1 className="text-2xl sm:text-3xl font-bold leading-tight text-[var(--color-foreground)]">
             {product.title}
           </h1>
           <p className="mt-2 text-[var(--color-muted)] dark:text-[var(--color-muted-foreground)]">
             {product.category?.name} · {product.brand?.name}
           </p>
 
-          <div className="mt-6 flex items-center gap-4">
-            <span className="text-3xl font-bold text-[var(--color-primary)] dark:text-[var(--color-primary)]">
+          <div className="mt-6 flex flex-wrap items-end gap-3">
+            <span className="text-2xl sm:text-3xl font-bold text-[var(--color-primary)] dark:text-[var(--color-primary)]">
               EGP {price}
             </span>
             {hasDiscount && (
-              <span className="text-xl text-[var(--color-muted)] line-through">
+              <span className="text-base sm:text-xl text-[var(--color-muted)] line-through">
                 EGP {product.price}
               </span>
             )}
@@ -145,8 +172,8 @@ export function ProductDetails() {
             {product.description}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <div className="flex items-center rounded-2xl border border-[var(--color-border)] dark:border-[var(--color-border)] overflow-hidden">
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            <div className="order-1 sm:order-none flex items-center rounded-2xl border border-[var(--color-border)] dark:border-[var(--color-border)] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -173,7 +200,7 @@ export function ProductDetails() {
               size="lg"
               loading={addToCart.isPending}
               onClick={() => addToCart.mutate(quantity)}
-              className="inline-flex items-center gap-2"
+              className="order-3 sm:order-none sm:w-auto inline-flex items-center justify-center gap-2"
             >
               <FiShoppingCart className="h-5 w-5" />
               Add to cart
@@ -184,7 +211,7 @@ export function ProductDetails() {
               onClick={() => toggleWishlist.mutate()}
               disabled={toggleWishlist.isPending}
               className={cn(
-                "p-3 rounded-2xl border border-[var(--color-border)] dark:border-[var(--color-border)] hover:bg-[var(--color-card-hover)] dark:hover:bg-[var(--color-card-hover)] transition-colors",
+                "order-2 sm:order-none self-end sm:self-auto p-3 rounded-2xl border border-[var(--color-border)] dark:border-[var(--color-border)] hover:bg-[var(--color-card-hover)] dark:hover:bg-[var(--color-card-hover)] transition-colors",
                 isInWishlist &&
                   "text-red-500 border-red-200 dark:border-red-900",
               )}
